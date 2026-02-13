@@ -1,0 +1,102 @@
+*{
+box-sizing: border-box;
+}
+body{
+    margin: 0;
+}
+
+.container{
+    margin: 1rem;
+}
+
+.main-content {
+    margin-left: 120px;
+}
+
+
+.topbar {
+    position: sticky;
+    top: 0;
+    background: #333;
+    color: #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+    gap: 2rem;
+    padding: 0 1rem;
+
+    z-index: 100;
+}
+.topbar ul {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    display: flex;
+    gap: 1rem;
+}
+.topbar a{
+    color:inherit;
+    text-decoration: none;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    padding: .25rem;
+}
+
+.topbar li:hover{
+    background-color: #777;
+}
+
+.topbar li.active{
+    background-color: #555;
+}
+
+.site-title{
+    font-size: 2rem;
+}
+.FourOFour{
+    font-size: 4rem;
+}
+
+.sidebar {
+    margin-top: 1rem;
+    position: fixed;
+    top: 0;
+    left: 0;
+
+    width: 120px;
+    height: 100vh;
+
+    background: #f4f4f4;
+    padding: 1rem;
+}
+
+/* PlayerTimer component styles */
+.player-timer{
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: .25rem;
+    border: 2px solid #444;
+    padding: .5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    user-select: none;
+    background: #fff;
+    transition: background .15s ease, transform .08s ease;
+}
+.player-timer:hover{
+    transform: translateY(-2px);
+}
+.player-timer.running{
+    background: #ffefcc;
+    border-color: #e18b00;
+}
+.player-timer .player-name{
+    font-weight: 600;
+}
+.player-timer .timer{
+    font-family: monospace;
+    font-size: 1rem;
+}
