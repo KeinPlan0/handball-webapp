@@ -12,7 +12,7 @@ export default function Topbar() {
                     <CustomLink to="/">Übersicht</CustomLink>
                     <CustomLink to="/spieler">Spieler</CustomLink>
                     <CustomLink to="/spiel">Spielzeit</CustomLink>
-                    <CustomLink to="/about">Info</CustomLink>
+                    <CustomLink to="/wechseln">Wechseln</CustomLink>
                 </ul>
             </nav>
             <span className="topbar-note"><span className="status-dot" /> Bereit fürs Spiel</span>
