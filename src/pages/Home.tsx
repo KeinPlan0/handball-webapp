@@ -19,8 +19,10 @@ export default function Home() {
                     <div className="court-arc court-arc-bottom" />
                     <div className="court-line court-line-one" />
                     <div className="court-line court-line-two" />
-                    <span className="court-number">60<span>′</span></span>
-                    <span className="court-caption">VOLLE SPIELZEIT</span>
+                    <div className="hero-logo-badge">
+                        <img src={`${process.env.PUBLIC_URL}/sga-logo.png`} alt="" />
+                    </div>
+                    <span className="court-caption">SG ARHEILGEN · HANDBALL</span>
                 </div>
                 <span className="hero-index">01 / MATCHDAY</span>
             </section>

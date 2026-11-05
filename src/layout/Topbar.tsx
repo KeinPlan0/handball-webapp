@@ -4,7 +4,7 @@ export default function Topbar() {
     return (
         <header className="topbar">
             <Link to="/" className="site-title" aria-label="Spielzeit home">
-                <span className="brand-mark" aria-hidden="true">S</span>
+                <img className="brand-mark" src={`${process.env.PUBLIC_URL}/sga-logo.png`} alt="SG Arheilgen Handball" />
                 <span>spielzeit<span className="brand-period">.</span></span>
             </Link>
             <nav aria-label="Main navigation">
