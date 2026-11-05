@@ -1,3 +1,5 @@
+![License](https://img.shields.io/github/license/KeinPlan0/handball-webapp)
+
 # Spielzeit · Handball
 
 **Einsatzzeiten im Blick. Wechsel fair planen. Beim Spiel bleiben.**
