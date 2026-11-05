@@ -70,4 +70,8 @@ Fehlerberichte, Ideen und Pull Requests sind willkommen. Prüfe vor einem Pull R
 
 ## Lizenz
 
-Vor einer öffentlichen Weiterverwendung oder Verteilung sollte eine Lizenzdatei ergänzt werden. Ohne Lizenz gelten standardmäßig die üblichen urheberrechtlichen Einschränkungen.
+Dieses Projekt steht unter der GNU Affero General Public License v3.0 (AGPL-3.0).
+
+Du darfst die Software verwenden, verändern und weiterverbreiten. Wenn du eine veränderte Version veröffentlichst oder über ein Netzwerk (z. B. als Web-Anwendung) bereitstellst, musst du den dazugehörigen Quellcode ebenfalls unter derselben Lizenz verfügbar machen.
+
+Weitere Informationen findest du in der Datei `LICENSE`.
