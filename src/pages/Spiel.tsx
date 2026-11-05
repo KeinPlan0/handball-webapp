@@ -1,5 +1,7 @@
 import  React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import PlayerTimer from "../Components/PlayerTimer";
+import MatchClock from "../Components/MatchClock";
 
 export default function Spiel() {
     const [playerNames, setPlayerNames] = useState<string[]>([]);
@@ -14,14 +16,17 @@ export default function Spiel() {
     }, []);
 
     return (
-        <div>
-            <h2>Spiel</h2>
+        <div className="content-page match-page">
+            <div className="page-heading">
+                <div><span className="section-kicker"><span className="status-dot" /> LIVE AM SPIELFELD</span><h1>Spielzeit</h1><p>Tippe auf eine Karte, um die Einsatzzeit zu starten oder anzuhalten.</p></div>
+            </div>
+            <MatchClock />
             {playerNames.length === 0 ? (
-                <p>No players found</p>
+                <div className="empty-state"><span className="empty-icon">＋</span><h2>Dein Team wartet noch</h2><p>Füge zuerst Spieler hinzu, dann kannst du ihre Einsatzzeiten tracken.</p><Link className="button button-primary" to="/spieler">Spieler hinzufügen <span aria-hidden="true">→</span></Link></div>
             ) : (
-                playerNames.map((_, index) => (
+                <div className="timer-grid">{playerNames.map((_, index) => (
                     <PlayerTimer key={index} index={index} />
-                ))
+                ))}</div>
             )}
         </div>
     );

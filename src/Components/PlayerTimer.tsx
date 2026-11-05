@@ -1,80 +1,97 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 type Props = {
   index?: number;
 };
 
+type SavedTimer = {
+  elapsedMs: number;
+  startedAt: number | null;
+};
+
+function readTimer(key: string): SavedTimer {
+  try {
+    const saved = localStorage.getItem(key);
+    if (saved) {
+      const parsed = JSON.parse(saved) as Partial<SavedTimer>;
+      if (typeof parsed.elapsedMs === "number" && Number.isFinite(parsed.elapsedMs)) {
+        return {
+          elapsedMs: Math.max(0, parsed.elapsedMs),
+          startedAt: typeof parsed.startedAt === "number" && Number.isFinite(parsed.startedAt)
+            ? parsed.startedAt
+            : null,
+        };
+      }
+    }
+  } catch {
+    // Ignore unavailable or malformed saved timer data.
+  }
+  return { elapsedMs: 0, startedAt: null };
+}
+
 export default function PlayerTimer({ index = 0 }: Props) {
-  const [running, setRunning] = useState(false);
-  const [elapsedMs, setElapsedMs] = useState(0);
-
-  const intervalRef = useRef<number | null>(null);
-  const startRef = useRef<number | null>(null);
-  const prevElapsedRef = useRef<number>(0);
-
   const playerNames = useMemo<string[]>(() => {
     try {
       const raw = localStorage.getItem("playerNames");
-      return raw ? JSON.parse(raw) : [];
-    } catch (e) {
+      const parsed: unknown = raw ? JSON.parse(raw) : [];
+      return Array.isArray(parsed) ? parsed.filter((item): item is string => typeof item === "string") : [];
+    } catch {
       return [];
     }
   }, []);
 
   const name = playerNames[index] ?? null;
+  const storageKey = `playerTimer:${index}:${name ?? "unknown"}`;
+  const [timer, setTimer] = useState<SavedTimer>(() => readTimer(storageKey));
+  const [now, setNow] = useState(() => Date.now());
+  const running = timer.startedAt !== null;
+  const elapsedMs = timer.elapsedMs + (timer.startedAt === null ? 0 : Math.max(0, now - timer.startedAt));
 
-  // start/stop interval when `running` changes
   useEffect(() => {
-    if (running) {
-      startRef.current = Date.now();
-      intervalRef.current = window.setInterval(() => {
-        const now = Date.now();
-        const delta = (now - (startRef.current ?? now)) + prevElapsedRef.current;
-        setElapsedMs(delta);
-      }, 100);
-    } else {
-      if (intervalRef.current != null) {
-        clearInterval(intervalRef.current);
-        intervalRef.current = null;
-      }
-      // keep prevElapsedRef in sync
-      prevElapsedRef.current = elapsedMs;
-    }
-
-    return () => {
-      if (intervalRef.current != null) {
-        clearInterval(intervalRef.current);
-        intervalRef.current = null;
-      }
-    };
-    // intentionally excluding elapsedMs from deps to avoid resetting the interval
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    if (!running) return;
+    const intervalId = window.setInterval(() => setNow(Date.now()), 100);
+    return () => window.clearInterval(intervalId);
   }, [running]);
 
-  // cleanup on unmount
   useEffect(() => {
-    return () => {
-      if (intervalRef.current != null) {
-        clearInterval(intervalRef.current);
-      }
+    const resetTimer = () => {
+      const resetValue = { elapsedMs: 0, startedAt: null };
+      setTimer(resetValue);
+      setNow(Date.now());
     };
+    window.addEventListener("playerTimersReset", resetTimer);
+    return () => window.removeEventListener("playerTimersReset", resetTimer);
   }, []);
 
-  const toggle = () => setRunning(r => !r);
+  const toggle = () => {
+    const timestamp = Date.now();
+    const nextTimer = running
+      ? { elapsedMs: timer.elapsedMs + Math.max(0, timestamp - (timer.startedAt ?? timestamp)), startedAt: null }
+      : { ...timer, startedAt: timestamp };
 
+    setTimer(nextTimer);
+    setNow(timestamp);
+    try {
+      localStorage.setItem(storageKey, JSON.stringify(nextTimer));
+    } catch {
+      // The timer remains usable for this session if storage is unavailable.
+    }
+  };
 
   return (
-    <div
+    <button
+      type="button"
       className={`player-timer ${running ? "running" : ""}`}
       onClick={toggle}
-      role="button"
-      tabIndex={0}
       aria-pressed={running}
       aria-label={name ? `Timer for ${name}` : "Player timer"}
     >
-      <div className="player-name">{name ?? "No player"}</div>
-      <div className="timer">{formatMs(elapsedMs)}</div>
-    </div>
+      <span className="timer-avatar">{name?.trim().charAt(0).toUpperCase() || "?"}</span>
+      <span className="player-name">{name ?? "No player"}</span>
+      <span className="timer">{formatMs(elapsedMs)}</span>
+      <span className="timer-state"><span className="status-dot" />{running ? "IM EINSATZ" : "BEREIT"}</span>
+      <span className="timer-hint">{running ? "Tippen zum Pausieren" : "Tippen zum Starten"}</span>
+    </button>
   );
 }
 
@@ -85,4 +102,3 @@ function formatMs(ms: number) {
   const centis = Math.floor((ms % 1000) / 10);
   return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}.${String(centis).padStart(2, "0")}`;
 }
-
