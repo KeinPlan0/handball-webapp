@@ -1,4 +1,14 @@
-![License](https://img.shields.io/github/license/KeinPlan0/handball-webapp)
+<p align="center">
+  <a href="https://KeinPlan0.github.io/handball-webapp/">
+    <img src="https://img.shields.io/badge/Live-Demo-brightgreen?style=flat-square" height="45" alt="Live Demo" />
+  </a>
+  <a href="https://react.dev/">
+    <img src="https://img.shields.io/badge/React-61DAFB?style=flat-square&logo=react&logoColor=black" height="45" alt="React" />
+  </a>
+  <a href="https://www.gnu.org/licenses/agpl-3.0">
+    <img src="https://img.shields.io/badge/License-AGPL_v3-blue.svg?style=flat-square" height="45" alt="AGPL v3 License" />
+  </a>
+</p>
 
 # Spielzeit · Handball
 
