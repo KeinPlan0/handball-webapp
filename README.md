@@ -10,6 +10,10 @@
   </a>
 </p>
 
+<p align="center">
+  <img src="assets/Screenshot%202026-11-05%20233302.png" width="1000" alt="App Dashboard Showcase" />
+</p>
+
 # Spielzeit · Handball
 
 **Einsatzzeiten im Blick. Wechsel fair planen. Beim Spiel bleiben.**
@@ -22,7 +26,13 @@ Spielzeit is a small, mobile-friendly web app for tracking handball player time 
 
 - **Kader verwalten:** Spielernamen hinzufügen und für den nächsten Spieltag bereithalten.
 - **Spielzeit messen:** Eine Spieluhr und einzelne Einsatz-Timer unabhängig voneinander starten und pausieren.
+  <p align="center">
+    <img src="assets/Screenshot%202026-11-05%20234027.png" width="800" alt="Spieluhr und Einsatz-Timer" />
+  </p>
 - **Wechsel planen:** Rotationen für die Spielformen **4+1** und **2×3 gegen 3** anhand der Kadergröße und Spieldauer erstellen.
+  <p align="center">
+    <img src="assets/Screenshot%202026-11-05%20234120.png" width="800" alt="Wechselplaner und Rotationszeiten" />
+  </p>
 - **Spielzeit verteilen:** Geplante Einsatzminuten pro Spieler vergleichen und die Startaufstellung neu auswürfeln.
 - **Lokal speichern:** Kader, Timer und Einstellungen bleiben im lokalen Browser gespeichert. Es ist kein Benutzerkonto erforderlich.
 
