@@ -4,8 +4,13 @@ import React, { useState, useEffect} from "react";
 export default function NameList() {
     const [name, setName] = useState("");
     const [names, setNames] = useState<string[]>(() => {
-        const stored = localStorage.getItem("playerNames");
-        return stored ? JSON.parse(stored) : [];
+        try {
+            const stored = localStorage.getItem("playerNames");
+            const parsed: unknown = stored ? JSON.parse(stored) : [];
+            return Array.isArray(parsed) ? parsed.filter((item): item is string => typeof item === "string") : [];
+        } catch {
+            return [];
+        }
     });
 
     const addName = () => {
@@ -25,36 +30,17 @@ export default function NameList() {
         localStorage.setItem("playerNames", JSON.stringify(names));
     }, [names]);
 
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === "Enter") {
-            addName();
-        }
-    };
-
     return (
-        <div style={{padding: "1rem", maxWidth: "400px"}}>
-            <h2>Add Names</h2>
-            <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                onKeyDown={handleKeyDown}
-                placeholder="Enter a name"
-                style={{padding: "0.5rem", width: "70%", marginRight: "0.5rem"}}
-            />
-            <button onClick={addName} style={{ padding: "0.5rem 1rem" }}>
-                Add
-            </button>
-            <button onClick={clearList} style={{ padding: "0.5rem 1rem" }}>
-                Clear List
-            </button>
-
-            <ul style={{ marginTop: "1rem" }}>
-                {names.map((n, index) => (
-                    <li key={index}>{n}</li>
-                ))}
-            </ul>
-
-        </div>
+        <section className="roster-card">
+            <div className="roster-card-heading"><div><span className="section-kicker">KADERÜBERSICHT</span><h2>Dein Team</h2></div><span className="roster-count">{String(names.length).padStart(2, "0")} <small>SPIELER</small></span></div>
+            <form className="add-player-form" onSubmit={(event) => { event.preventDefault(); addName(); }}>
+                <label htmlFor="player-name">Spielername</label>
+                <div className="input-row"><input id="player-name" type="text" value={name} onChange={(event) => setName(event.target.value)} placeholder="z. B. Alex Müller" maxLength={40} /><button className="button button-primary" type="submit" disabled={!name.trim()}>Hinzufügen <span aria-hidden="true">＋</span></button></div>
+            </form>
+            {names.length ? <>
+                <ul className="roster-list">{names.map((player, index) => <li className="roster-player" key={`${player}-${index}`}><span className="player-avatar">{player.trim().charAt(0).toUpperCase()}</span><span className="roster-player-name">{player}</span><span className="player-position">FELDSPIELER</span><span className="player-number">{String(index + 1).padStart(2, "0")}</span></li>)}</ul>
+                <button className="text-button clear-button" type="button" onClick={clearList}>Kader leeren</button>
+            </> : <div className="roster-empty"><span>01</span><p>Noch keine Spieler im Kader. Füge oben den ersten Namen hinzu.</p></div>}
+        </section>
     )
 }

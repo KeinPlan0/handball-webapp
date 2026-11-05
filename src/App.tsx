@@ -6,19 +6,16 @@ import Spiel from './pages/Spiel';
 import { Route, Routes } from "react-router-dom";
 function App() {
     return (
-        <>
-            <MainLayout>
-                <div className="container">
-                    <Routes>
-                        <Route path="/" Component={Home} />
-                        <Route path="/about" Component={About} />
-                        <Route path="/spieler" Component={Spieler} />
-                        <Route path="/spiel" Component={Spiel} />
-                    </Routes>
-                </div>
-            </MainLayout>
-
-        </>
+        <MainLayout>
+            <div className="container">
+                <Routes>
+                    <Route path="/" Component={Home} />
+                    <Route path="/about" Component={About} />
+                    <Route path="/spieler" Component={Spieler} />
+                    <Route path="/spiel" Component={Spiel} />
+                </Routes>
+            </div>
+        </MainLayout>
     );
 }
 

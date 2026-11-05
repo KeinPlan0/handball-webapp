@@ -16,7 +16,7 @@ export default function PlayerTimer({ index = 0 }: Props) {
     try {
       const raw = localStorage.getItem("playerNames");
       return raw ? JSON.parse(raw) : [];
-    } catch (e) {
+    } catch {
       return [];
     }
   }, []);
@@ -64,17 +64,19 @@ export default function PlayerTimer({ index = 0 }: Props) {
 
 
   return (
-    <div
+    <button
+      type="button"
       className={`player-timer ${running ? "running" : ""}`}
       onClick={toggle}
-      role="button"
-      tabIndex={0}
       aria-pressed={running}
       aria-label={name ? `Timer for ${name}` : "Player timer"}
     >
-      <div className="player-name">{name ?? "No player"}</div>
-      <div className="timer">{formatMs(elapsedMs)}</div>
-    </div>
+      <span className="timer-avatar">{name?.trim().charAt(0).toUpperCase() || "?"}</span>
+      <span className="player-name">{name ?? "No player"}</span>
+      <span className="timer">{formatMs(elapsedMs)}</span>
+      <span className="timer-state"><span className="status-dot" />{running ? "IM EINSATZ" : "BEREIT"}</span>
+      <span className="timer-hint">{running ? "Tippen zum Pausieren" : "Tippen zum Starten"}</span>
+    </button>
   );
 }
 
