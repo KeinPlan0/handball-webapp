@@ -7,8 +7,7 @@ type SavedClock = {
 };
 
 const STORAGE_KEY = "matchClock";
-const DEFAULT_DURATION_MINUTES = 60;
-
+const DEFAULT_DURATION_MINUTES = 20;
 function readClock(): SavedClock {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
@@ -33,7 +32,8 @@ function readClock(): SavedClock {
 }
 
 export default function MatchClock() {
-  const [clock, setClock] = useState<SavedClock>(readClock);
+    const [durationInput, setDurationInput] = useState("20");
+    const [clock, setClock] = useState<SavedClock>(readClock);
   const [now, setNow] = useState(() => Date.now());
   const [durationMinutes, setDurationMinutes] = useState(() => {
     const savedDuration = readClock().durationMinutes;
@@ -108,10 +108,20 @@ export default function MatchClock() {
           {String(minutes).padStart(2, "0")}<span>:</span>{String(seconds).padStart(2, "0")}
         </span>
         <span className="match-clock-status"><span className="status-dot" />{running ? "SPIEL LÄUFT" : "SPIEL PAUSIERT"}</span>
-        <label className="match-duration">SPIELDAUER <span><input aria-label="Spieldauer in Minuten" type="number" min="1" max="240" value={durationMinutes} onChange={(event) => {
-          const value = Number(event.target.value);
-          if (Number.isFinite(value) && value >= 1 && value <= 240) setDuration(value);
-        }} /> min</span></label>
+        <label className="match-duration">SPIELDAUER <span><input
+            type="number"
+            min="1"
+            max="240"
+            value={durationInput}
+            onChange={(event) => {
+                setDurationInput(event.target.value);
+
+                const value = Number(event.target.value);
+                if (!isNaN(value) && value >= 1 && value <= 240) {
+                    setDuration(value);
+                }
+            }}
+        /> min</span></label>
       </div>
       <div className="match-clock-controls">
         <button className="button button-primary" type="button" onClick={toggle}>{running ? "Pausieren" : "Spiel starten"}<span aria-hidden="true">{running ? "Ⅱ" : "▶"}</span></button>
