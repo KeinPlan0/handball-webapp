@@ -106,6 +106,9 @@ export default function Wechseln() {
     const [players, setPlayers] = useState<string[]>(readNames);
     const [format, setFormat] = useState<Format>("4+1");
     const [duration, setDuration] = useState(readDuration);
+    const [durationInput, setDurationInput] = useState(() =>
+        String(readDuration())
+    );
     const [rotationSeed, setRotationSeed] = useState(readRotationSeed);
     const activeCount = format === "4+1" ? 5 : 7;
 
@@ -155,19 +158,29 @@ export default function Wechseln() {
                     </select>
                     <p className="format-detail">{formatDetail}</p>
                     <label className="setting-label" htmlFor="match-duration">Spieldauer</label>
-                    <div className="setting-input"><input id="match-duration" type="number" min="1" max="240" value={duration} onChange={(event) => {
-                        const value = Number(event.target.value);
-                        if (Number.isFinite(value) && value >= 1 && value <= 240) {
-                            setDuration(value);
-                            try {
-                                const savedClock = localStorage.getItem("matchClock");
-                                const clock = savedClock ? JSON.parse(savedClock) : { elapsedMs: 0, startedAt: null };
-                                localStorage.setItem("matchClock", JSON.stringify({ ...clock, durationMinutes: value }));
-                            } catch {
-                                // Keep the planner usable if storage is unavailable.
+                    <div className="setting-input"><input
+                        aria-label="Spieldauer in Minuten"
+                        type="number"
+                        min="1"
+                        max="240"
+                        value={durationInput}
+                        onChange={(event) => {
+                            const input = event.target.value;
+
+                            setDurationInput(input);
+
+                            const value = Number(input);
+
+                            if (!isNaN(value) && value >= 1 && value <= 240) {
+                                setDuration(value);
                             }
-                        }
-                    }} /><span>Minuten</span></div>
+                        }}
+                        onBlur={() => {
+                            if (!durationInput || Number(durationInput) < 1) {
+                                setDurationInput(String(durationInput));
+                            }
+                        }}
+                    /><span>Minuten</span></div>
                     <div className="active-count"><span>Gleichzeitig aktiv</span><strong>{activeCount}</strong></div>
                     <button className="button shuffle-button" type="button" onClick={rerollStartingLineup}><span aria-hidden="true">⤨</span> Startaufstellung neu auswürfeln</button>
                     <p className="planner-note">Die Wechselzeiten richten sich automatisch nach Kadergröße und Spieldauer. Pro Stopp wechseln höchstens zwei Spieler rein und raus.</p>
@@ -194,22 +207,13 @@ export default function Wechseln() {
                         ))}</ol>
                         </>
                     )}
-                    <div className="schedule-footnote">Die Rotation ist so berechnet, dass alle am Ende gleich viele Minuten spielen. Zeiten können dadurch auch innerhalb einer Minute liegen. Bei 2×3 gegen 3 zusätzlich Angriff, Abwehr und Bank rotieren.</div>
+                    <div className="schedule-footnote">Die Rotation ist so berechnet, dass alle am Ende gleich viele Minuten spielen. Zeiten können dadurch auch innerhalb einer Minute liegen.</div>
                     {hasEnoughPlayers && <section className="playtime-summary" aria-label="Geplante Einsatzzeit je Spieler">
                         <div className="playtime-heading"><div><span className="section-kicker">FAIRE VERTEILUNG</span><h3>Geplante Einsatzzeit</h3></div><span>von {duration} Min.</span></div>
                         <ul>{players.map((player, index) => <li key={`${player}-${index}`}><span className="playtime-player"><span className="player-avatar">{player.trim().charAt(0).toUpperCase()}</span>{player}</span><span className="playtime-bar"><span style={{ width: `${Math.min(100, (playtime[index] / duration) * 100)}%` }} /></span><strong>{playtime[index]} Min.</strong></li>)}</ul>
                     </section>}
                 </section>
             </div>
-
-            <section className="format-notes">
-                <span className="section-kicker">DIE BEIDEN SPIELFORMEN</span>
-                <div className="format-note-grid">
-                    <article><strong>4+1</strong><p>Vier Feldspieler plus Torwart spielen auf dem Querfeld. Diese Form wird unter anderem im Minihandball verwendet.</p></article>
-                    <article><strong>2×3 gegen 3</strong><p>Pro Team spielen sechs Feldspieler, je drei in Angriffs- und Abwehrhälfte, plus Torwart. Die Mittellinie darf im Spiel nicht überquert werden; Wechsel und Rollenrotation folgen den Regeln des jeweiligen Verbands.</p></article>
-                </div>
-                <p className="format-sources">Grundlagen: <a href="https://www.dhb-trainercenter.de/fileadmin/user_upload/pageflip/durchfuehrungsbestimmungen/10/" target="_blank" rel="noreferrer">DHB Durchführungsbestimmungen</a> · <a href="https://handball-bes.de/wp-content/uploads/2025/07/250727-DfB-HK-BES-Saison-25_26-mit-Anlagen-Version-1-finalisiert.pdf" target="_blank" rel="noreferrer">Handballkreis BES 2025/26</a></p>
-            </section>
         </div>
     );
 }
