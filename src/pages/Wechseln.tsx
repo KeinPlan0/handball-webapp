@@ -642,8 +642,7 @@ export default function Wechseln() {
     return (
         <div className="content-page switch-page">
             <div className="page-heading">
-                <div><span className="section-kicker">FAIR VERTEILTE EINSATZZEIT</span><h1>Wechseln</h1><p>Ein klarer Wechselplan, damit alle möglichst gleich viel spielen.</p></div>
-                <span className="heading-badge">MAX. 2<br />WECHSEL PRO STOPP</span>
+                <div><h1>Wechseln</h1><p>Ein klarer Wechselplan, damit alle möglichst gleich viel spielen.</p></div>
             </div>
 
             <section className="goalkeeper-picker" aria-labelledby="goalkeeper-picker-title">
