@@ -107,7 +107,7 @@ export default function MatchClock() {
         <span className="match-clock-time" aria-live="off">
           {String(minutes).padStart(2, "0")}<span>:</span>{String(seconds).padStart(2, "0")}
         </span>
-        <span className="match-clock-status"><span className="status-dot" />{running ? "SPIEL LÄUFT" : "SPIEL PAUSIERT"}</span>
+        <span className="match-clock-status">{running ? "SPIEL LÄUFT" : "SPIEL PAUSIERT"}</span>
         <label className="match-duration">SPIELDAUER <span><input
             type="number"
             min="1"

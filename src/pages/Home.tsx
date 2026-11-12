@@ -28,12 +28,11 @@ export default function Home() {
             </section>
             <section className="home-bottom">
                 <div>
-                    <span className="section-kicker">ALLES IM ÜBERBLICK</span>
-                    <h2>Bereit, wenn ihr es seid.</h2>
                 </div>
                 <div className="feature-grid">
                     <Link to="/spieler" className="feature-card"><span className="feature-icon">01</span><span><strong>Team aufstellen</strong><small>Spieler hinzufügen und vorbereiten</small></span><span className="feature-arrow">↗</span></Link>
                     <Link to="/spiel" className="feature-card"><span className="feature-icon feature-icon-accent">02</span><span><strong>Einsatzzeiten tracken</strong><small>Timer pro Spieler, direkt am Spielfeld</small></span><span className="feature-arrow">↗</span></Link>
+                    <Link to="/wechseln" className="feature-card"><span className="feature-icon feature-icon-accent">03</span><span><strong>Wechseln Berechnen</strong><small>Automatisierte berechnung der Speilzeiten</small></span><span className="feature-arrow">↗</span></Link>
                 </div>
             </section>
         </div>

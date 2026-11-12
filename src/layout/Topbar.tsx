@@ -15,7 +15,6 @@ export default function Topbar() {
                     <CustomLink to="/wechseln">Wechseln</CustomLink>
                 </ul>
             </nav>
-            <span className="topbar-note"><span className="status-dot" /> Bereit fürs Spiel</span>
         </header>
     );
 }

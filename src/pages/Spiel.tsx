@@ -18,7 +18,6 @@ export default function Spiel() {
     return (
         <div className="content-page match-page">
             <div className="page-heading">
-                <div><span className="section-kicker"><span className="status-dot" /> LIVE AM SPIELFELD</span><h1>Spielzeit</h1><p>Tippe auf eine Karte, um die Einsatzzeit zu starten oder anzuhalten.</p></div>
             </div>
             <MatchClock />
             {playerNames.length === 0 ? (
