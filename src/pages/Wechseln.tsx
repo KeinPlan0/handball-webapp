@@ -34,7 +34,7 @@ function readRotationSeed(): number {
 }
 
 function formatTime(minutes: number): string {
-    const totalSeconds = Math.round(minutes * 60);
+    const totalSeconds = Math.floor(minutes * 60);
     return `${String(Math.floor(totalSeconds / 60)).padStart(2, "0")}:${String(totalSeconds % 60).padStart(2, "0")}`;
 }
 
