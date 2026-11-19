@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import useMatchDuration from "../hooks/useMatchDuration";
 
 type Format = "4+1" | "2x3";
 type Switch = {
@@ -13,7 +14,6 @@ type Switch = {
 type RotationPlan = { initialActive: number[]; initialGoalkeeperIndex?: number; schedule: Switch[] };
 
 const PLAYER_NAMES_KEY = "playerNames";
-const DEFAULT_DURATION_MINUTES = 60;
 const ROTATION_SEED_KEY = "substitutionRotationSeed";
 const GOALKEEPER_NAMES_KEY = "goalkeeperPlayers";
 
@@ -45,16 +45,6 @@ function readNames(): string[] {
         return Array.isArray(parsed) ? parsed.filter((name): name is string => typeof name === "string") : [];
     } catch {
         return [];
-    }
-}
-
-function readDuration(): number {
-    try {
-        const saved = localStorage.getItem("matchClock");
-        const duration = saved ? JSON.parse(saved).durationMinutes : DEFAULT_DURATION_MINUTES;
-        return Number.isFinite(duration) && duration >= 1 && duration <= 240 ? duration : DEFAULT_DURATION_MINUTES;
-    } catch {
-        return DEFAULT_DURATION_MINUTES;
     }
 }
 
@@ -541,7 +531,8 @@ function createFairKeeperSchedule(players: string[], keeperIndices: number[], ac
             candidate = optimizeContinuityTiming(candidate, players.length, duration, maximumPlaytimeRange);
             const minutes = calculatePlaytime(players.length, candidate.initialActive, duration, candidate.schedule);
             const deviation = Math.max(...minutes.map((playtime, index) => {
-                const target = keeperSet.has(index) ? Math.max(fairTotalSeconds, keeperDutySeconds) : fairTotalSeconds;
+                let target: number;
+                target = keeperSet.has(index) ? Math.max(fairTotalSeconds, keeperDutySeconds) : fairTotalSeconds;
                 return Math.abs(playtime * 60 - target);
             }));
             const spread = (Math.max(...minutes) - Math.min(...minutes)) * 60;
@@ -567,10 +558,8 @@ export default function Wechseln() {
     const [players, setPlayers] = useState<string[]>(readNames);
     const [goalkeeperKeys, setGoalkeeperKeys] = useState<string[]>(readGoalkeeperNames);
     const [format, setFormat] = useState<Format>("4+1");
-    const [duration, setDuration] = useState(readDuration);
-    const [durationInput, setDurationInput] = useState(() =>
-        String(readDuration())
-    );
+    const [duration, setDuration] = useMatchDuration();
+    const [durationInput, setDurationInput] = useState(() => String(duration));
     const [rotationSeed, setRotationSeed] = useState(readRotationSeed);
     const activeCount = format === "4+1" ? 5 : 7;
 
@@ -603,6 +592,8 @@ export default function Wechseln() {
             window.removeEventListener("playerNamesUpdated", refreshPlayers);
         };
     }, []);
+
+    useEffect(() => setDurationInput(String(duration)), [duration]);
 
     const playerKeys = useMemo(() => createPlayerKeys(players), [players]);
     const selectedKeeperIndices = useMemo(() => playerKeys.flatMap((key, index) => goalkeeperKeys.includes(key) ? [index] : []), [playerKeys, goalkeeperKeys]);

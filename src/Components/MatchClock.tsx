@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import useMatchDuration, { DEFAULT_MATCH_DURATION_MINUTES } from "../hooks/useMatchDuration";
 
 type SavedClock = {
   elapsedMs: number;
@@ -7,7 +8,6 @@ type SavedClock = {
 };
 
 const STORAGE_KEY = "matchClock";
-const DEFAULT_DURATION_MINUTES = 20;
 function readClock(): SavedClock {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
@@ -21,7 +21,7 @@ function readClock(): SavedClock {
             : null,
           durationMinutes: typeof parsed.durationMinutes === "number" && Number.isFinite(parsed.durationMinutes)
             ? parsed.durationMinutes
-            : DEFAULT_DURATION_MINUTES,
+            : DEFAULT_MATCH_DURATION_MINUTES,
         };
       }
     }
@@ -32,15 +32,10 @@ function readClock(): SavedClock {
 }
 
 export default function MatchClock() {
-    const [durationInput, setDurationInput] = useState("20");
+    const [durationMinutes, setDurationMinutes] = useMatchDuration();
+    const [durationInput, setDurationInput] = useState(String(durationMinutes));
     const [clock, setClock] = useState<SavedClock>(readClock);
   const [now, setNow] = useState(() => Date.now());
-  const [durationMinutes, setDurationMinutes] = useState(() => {
-    const savedDuration = readClock().durationMinutes;
-    return typeof savedDuration === "number" && savedDuration >= 1 && savedDuration <= 240
-      ? savedDuration
-      : DEFAULT_DURATION_MINUTES;
-  });
   const running = clock.startedAt !== null;
   const elapsedMs = Math.min(
     durationMinutes * 60_000,
@@ -49,6 +44,8 @@ export default function MatchClock() {
   const elapsedSeconds = Math.floor(elapsedMs / 1000);
   const minutes = Math.floor(elapsedSeconds / 60);
   const seconds = elapsedSeconds % 60;
+
+  useEffect(() => setDurationInput(String(durationMinutes)), [durationMinutes]);
 
   useEffect(() => {
     if (!running) return;
@@ -66,14 +63,12 @@ export default function MatchClock() {
   };
 
   const setDuration = (value: number) => {
-    const nextDuration = Math.min(240, Math.max(1, value));
-    setDurationMinutes(nextDuration);
-    saveClock({ ...clock, durationMinutes: nextDuration });
+    setDurationMinutes(value);
   };
 
   useEffect(() => {
     if (running && elapsedMs >= durationMinutes * 60_000) {
-      saveClock({ elapsedMs: durationMinutes * 60_000, startedAt: null, durationMinutes });
+      saveClock({ elapsedMs: durationMinutes * 60_000, startedAt: null });
       setNow(Date.now());
     }
   }, [durationMinutes, elapsedMs, running]);
@@ -89,7 +84,7 @@ export default function MatchClock() {
 
   const reset = () => {
     setNow(Date.now());
-    saveClock({ elapsedMs: 0, startedAt: null, durationMinutes });
+    saveClock({ elapsedMs: 0, startedAt: null });
     try {
       Object.keys(localStorage)
         .filter((key) => key.startsWith("playerTimer:"))
