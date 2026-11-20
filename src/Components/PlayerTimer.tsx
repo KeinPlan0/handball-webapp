@@ -23,8 +23,9 @@ function readTimer(key: string): SavedTimer {
         };
       }
     }
-  } catch {
+  } catch (err) {
     // Ignore unavailable or malformed saved timer data.
+    console.error("Failed to read player timer:", err);
   }
   return { elapsedMs: 0, startedAt: null };
 }
@@ -34,14 +35,20 @@ export default function PlayerTimer({ index = 0 }: Props) {
     try {
       const raw = localStorage.getItem("playerNames");
       const parsed: unknown = raw ? JSON.parse(raw) : [];
-      return Array.isArray(parsed) ? parsed.filter((item): item is string => typeof item === "string") : [];
-    } catch {
+      // Sanitize and filter player names
+      const names = Array.isArray(parsed) ? parsed.filter((item): item is string => typeof item === "string") : [];
+      return names.map(name => 
+        name.replace(/[\u0000-\u001F\u007F-\u009F]/g, '').trim().slice(0, 40)
+      );
+    } catch (err) {
+      console.error("Failed to read player names:", err);
       return [];
     }
   }, []);
 
   const name = playerNames[index] ?? null;
-  const storageKey = `playerTimer:${index}:${name ?? "unknown"}`;
+  // Use index-based key for more reliable timer storage
+  const storageKey = `playerTimer:${index}`;
   const [timer, setTimer] = useState<SavedTimer>(() => readTimer(storageKey));
   const [now, setNow] = useState(() => Date.now());
   const running = timer.startedAt !== null;
@@ -73,8 +80,9 @@ export default function PlayerTimer({ index = 0 }: Props) {
     setNow(timestamp);
     try {
       localStorage.setItem(storageKey, JSON.stringify(nextTimer));
-    } catch {
+    } catch (err) {
       // The timer remains usable for this session if storage is unavailable.
+      console.error("Failed to save player timer:", err);
     }
   };
 

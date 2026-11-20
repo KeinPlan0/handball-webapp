@@ -16,6 +16,11 @@ export default function NameList() {
     const addName = () => {
         const trimmed = name.trim();
         if (trimmed === "") return;
+        // Check for duplicate names (case-insensitive)
+        if (names.some(n => n.trim().toLowerCase() === trimmed.toLowerCase())) {
+            // Show error/warning - could be enhanced with UI feedback
+            return;
+        }
         setNames(prev => [...prev, trimmed]);
         setName("");
     };
@@ -23,11 +28,16 @@ export default function NameList() {
     const clearList = () => {
         // Clear the saved names array and reset the input
         setNames([]);
+        setName("");
     }
 
 
     useEffect(() => {
-        localStorage.setItem("playerNames", JSON.stringify(names));
+        // Sanitize and save names to localStorage
+        const sanitizedNames = names.map(name => 
+            name.replace(/[\u0000-\u001F\u007F-\u009F]/g, '').trim().slice(0, 40)
+        );
+        localStorage.setItem("playerNames", JSON.stringify(sanitizedNames));
     }, [names]);
 
     return (

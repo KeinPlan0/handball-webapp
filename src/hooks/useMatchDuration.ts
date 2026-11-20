@@ -23,8 +23,9 @@ function readDuration(): number {
             localStorage.setItem(DURATION_KEY, String(legacyDuration));
             return legacyDuration;
         }
-    } catch {
+    } catch (err) {
         // Use the default if storage contains invalid data or is unavailable.
+        console.error("Failed to read match duration:", err);
     }
     return DEFAULT_MATCH_DURATION_MINUTES;
 }
@@ -33,8 +34,9 @@ export function saveMatchDuration(value: number): number {
     const duration = Math.min(240, Math.max(1, Math.round(value)));
     try {
         localStorage.setItem(DURATION_KEY, String(duration));
-    } catch {
+    } catch (err) {
         // Keep the selected value usable in the current session.
+        console.error("Failed to save match duration:", err);
     }
     window.dispatchEvent(new Event("matchDurationUpdated"));
     return duration;
