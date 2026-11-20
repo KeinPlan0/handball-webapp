@@ -21,16 +21,14 @@ function readRotationSeed(): number {
     try {
         const saved = Number(localStorage.getItem(ROTATION_SEED_KEY));
         if (Number.isFinite(saved) && saved >= 0 && saved < 1) return saved;
-    } catch (err) {
+    } catch {
         // Create a session seed if storage is unavailable.
-        console.error("Failed to read rotation seed:", err);
     }
     const seed = Math.random();
     try {
         localStorage.setItem(ROTATION_SEED_KEY, String(seed));
-    } catch (err) {
+    } catch {
         // The current page still keeps the generated seed in state.
-        console.error("Failed to save rotation seed:", err);
     }
     return seed;
 }
@@ -46,9 +44,8 @@ function readNames(): string[] {
         const parsed: unknown = stored ? JSON.parse(stored) : [];
         const names = Array.isArray(parsed) ? parsed.filter((name): name is string => typeof name === "string") : [];
         // Sanitize and filter player names
-        return names.map(name => 
-            name.replace(/[\u0000-\u001F\u007F-\u009F]/g, '').trim().slice(0, 40)
-        );
+        // eslint-disable-next-line no-control-regex
+        return names.map(name => name.replace(/[\x00-\x1F\x7F-\x9F]/g, '').trim().slice(0, 40));
     } catch (err) {
         console.error("Failed to read player names:", err);
         return [];
@@ -59,8 +56,7 @@ function readGoalkeeperNames(): string[] {
     try {
         const parsed: unknown = JSON.parse(localStorage.getItem(GOALKEEPER_NAMES_KEY) || "[]");
         return Array.isArray(parsed) ? parsed.filter((name): name is string => typeof name === "string") : [];
-    } catch (err) {
-        console.error("Failed to read goalkeeper names:", err);
+    } catch {
         return [];
     }
 }
@@ -533,8 +529,7 @@ function createFairKeeperSchedule(players: string[], keeperIndices: number[], ac
             let candidate: RotationPlan;
             try {
                 candidate = createKeeperSchedule(players, keeperIndices, activeCount, duration, seed, phaseTolerance, rotationPatternOffset);
-            } catch (err) {
-                console.error("Failed to create keeper schedule:", err);
+            } catch {
                 continue;
             }
             candidate = optimizeContinuityTiming(candidate, players.length, duration, maximumPlaytimeRange);
@@ -582,9 +577,8 @@ export default function Wechseln() {
                 if (next.length !== current.length) {
                     try {
                         localStorage.setItem(GOALKEEPER_NAMES_KEY, JSON.stringify(next));
-                    } catch (err) {
+                    } catch {
                         // The current selection remains usable for this page session.
-                        console.error("Failed to save goalkeeper names:", err);
                     }
                 }
                 return next;
@@ -623,9 +617,8 @@ export default function Wechseln() {
         setRotationSeed(nextSeed);
         try {
             localStorage.setItem(ROTATION_SEED_KEY, String(nextSeed));
-        } catch (err) {
+        } catch {
             // The new lineup remains selected for this page session.
-            console.error("Failed to save rotation seed:", err);
         }
     };
 
@@ -634,9 +627,8 @@ export default function Wechseln() {
             const next = current.includes(playerKey) ? current.filter((key) => key !== playerKey) : [...current, playerKey];
             try {
                 localStorage.setItem(GOALKEEPER_NAMES_KEY, JSON.stringify(next));
-            } catch (err) {
+            } catch {
                 // Keep the new selection for this page session if storage is unavailable.
-                console.error("Failed to save goalkeeper names:", err);
             }
             return next;
         });
