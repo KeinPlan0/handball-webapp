@@ -14,19 +14,23 @@ function readClock(): SavedClock {
     if (saved) {
       const parsed = JSON.parse(saved) as Partial<SavedClock>;
       if (typeof parsed.elapsedMs === "number" && Number.isFinite(parsed.elapsedMs)) {
+        const duration = typeof parsed.durationMinutes === "number" && Number.isFinite(parsed.durationMinutes)
+          ? parsed.durationMinutes
+          : DEFAULT_MATCH_DURATION_MINUTES;
+        // Validate duration is within acceptable range
+        const validatedDuration = Math.min(240, Math.max(1, Math.round(duration)));
         return {
           elapsedMs: Math.max(0, parsed.elapsedMs),
           startedAt: typeof parsed.startedAt === "number" && Number.isFinite(parsed.startedAt)
             ? parsed.startedAt
             : null,
-          durationMinutes: typeof parsed.durationMinutes === "number" && Number.isFinite(parsed.durationMinutes)
-            ? parsed.durationMinutes
-            : DEFAULT_MATCH_DURATION_MINUTES,
+          durationMinutes: validatedDuration,
         };
       }
     }
-  } catch {
+  } catch (err) {
     // Ignore unavailable or malformed saved clock data.
+    console.error("Failed to read match clock:", err);
   }
   return { elapsedMs: 0, startedAt: null };
 }
@@ -57,8 +61,9 @@ export default function MatchClock() {
     setClock(nextClock);
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(nextClock));
-    } catch {
+    } catch (err) {
       // Keep the clock usable in this session if storage is unavailable.
+      console.error("Failed to save match clock:", err);
     }
   };
 
@@ -89,8 +94,9 @@ export default function MatchClock() {
       Object.keys(localStorage)
         .filter((key) => key.startsWith("playerTimer:"))
         .forEach((key) => localStorage.removeItem(key));
-    } catch {
+    } catch (err) {
       // The in-page timers are still reset if storage is unavailable.
+      console.error("Failed to clear player timers:", err);
     }
     window.dispatchEvent(new Event("playerTimersReset"));
   };
