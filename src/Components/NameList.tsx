@@ -35,7 +35,8 @@ export default function NameList() {
     useEffect(() => {
         // Sanitize and save names to localStorage
         const sanitizedNames = names.map(name => 
-            name.replace(/[\u0000-\u001F\u007F-\u009F]/g, '').trim().slice(0, 40)
+            // eslint-disable-next-line no-control-regex
+            name.replace(/[\x00-\x1F\x7F-\x9F]/g, '').trim().slice(0, 40)
         );
         localStorage.setItem("playerNames", JSON.stringify(sanitizedNames));
     }, [names]);
